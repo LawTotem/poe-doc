@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">2.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">3.</strong> ARM</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">4.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">5.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">6.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">7.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">2.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">3.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">4.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">5.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">6.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">7.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">8.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -311,6 +311,90 @@ This is followed by a pair of numbers whose magnitude is around 1, probably an 2
 Sometimes this line has a lot of quoted strings - typically empty and sometimes with short contents.
 Sometimes this line has twice the number of elements and then has the strings first and numbers later.
 In some rare case the line has a few more elements than the predicted extents.</p>
+<h1><a class="header" href="#ao--aoc-file-structure" id="ao--aoc-file-structure">AO / AOC file structure</a></h1>
+<p>This describes version 2 of the file format which is the only one that has existed in public since the release of PoE 1.0.</p>
+<p>These two closely related file types contain a set of components that describe the visuals and effects of an object in the game world.</p>
+<p>The files are UTF-16LE with a BOM and Windows CRLF newlines. They may have C-style <code>/* comments */</code> spanning multiple lines.</p>
+<p>They begin with a version line which here is <code>version 2</code>. This is followed by one or more <code>extends &quot;x&quot;</code> lines which either references another file by full path or is the special string <code>&quot;nothing&quot;</code> for bases.</p>
+<h2><a class="header" href="#components" id="components">Components</a></h2>
+<p>Components are denoted by an unquoted name and the component members inside curly braces - an empty component looks like <code>ClientAnimationController { }</code>. Components may appear multiple times in the same file as &quot;forward declarations&quot; according to comments in the similar OT/OTC file formats.</p>
+<p>The members of a component are indented with one tab and seem to be able to have values of string, boolean, integer and floating point types like:</p>
+<pre><code>    x = &quot;hi there&quot;
+    y = true
+    z = 3.1415f
+    w = 10
+</code></pre>
+<p>Some component members have a list of additional lines, indented by two tabs. These include <code>animation</code> and <code>continuous_effect</code>.</p>
+<pre><code>	animation = &quot;throw&quot;
+		2.25226 = &quot;throw_trl Metadata/Particles/monster_effects/act10/oriath_children/apple_blast.pet&quot;
+</code></pre>
+<pre><code>    animation = &quot;throw&quot;
+		2.12065,0.209613 = &quot;throw_trl Metadata/Particles/monster_effects/act10/oriath_children/throw_trl.trl&quot;
+</code></pre>
+<pre><code>	continuous_effect = &quot;wake vortex&quot;
+		size = &quot;100.0 100.0 100.0&quot;
+		duration = 5.0
+		is_persistent = true
+		shape = &quot;Wake&quot;
+		is_attached = true	
+		bone_name = &quot;root&quot;
+</code></pre>
+<p>The possible components seem to be documented in the files for <code>Parent_AssetViewer</code> as follows:</p>
+<p><code>Metadata/Parent_AssetViewer.ao</code></p>
+<pre><code>version 2
+extends &quot;nothing&quot;
+
+/*
+    This file contains all components needed by an AO.
+    Strictly for use in the asset viewer!
+*/
+
+BaseAnimationEvents { }
+AnimationController { }
+AttachedAnimatedObject { }
+Hull { }
+</code></pre>
+<p><code>Metadata/Parent_AssetViewer.aoc</code></p>
+<pre><code>version 2
+extends &quot;nothing&quot;
+
+/*
+    This file contains all components needed by an AO.
+    Strictly for use in the asset viewer!
+*/
+
+ClientAnimationController { }
+AnimatedRender { }
+SkinMesh { }
+SoundEvents { }
+BoneGroups { }
+ParticleEffects { }
+TrailsEffects { }
+DecalEvents { }
+Lights { }
+EffectPack { }
+ScreenShake { }
+WindEvents {}
+SoundParams { }
+</code></pre>
+<h2><a class="header" href="#observed-inconsistencies-and-mistakes" id="observed-inconsistencies-and-mistakes">Observed inconsistencies and mistakes</a></h2>
+<p>Some files seem to bear evidence of having been hand-edited with quoting mistakes and indentation errors.</p>
+<p>One file has an errant tab at the start of the version line:</p>
+<pre><code>    version 2
+</code></pre>
+<p>One file has two excess tabs before an animation block, putting it deeper than the keyframes of the surrounding animations:</p>
+<pre><code>    animation = &quot;a&quot;
+        0.1234 = &quot;...&quot;
+            animation = &quot;b&quot;
+        0.1234 = &quot;...&quot;
+    animation = &quot;c&quot;
+        0.1234 = &quot;...&quot;
+</code></pre>
+<p>One file has unbalanced quoted strings in an animation block, where one particular string ends with two double quotes:</p>
+<pre><code>		0.432554 = &quot;Audio/Sound Effects/Footstep/Creak/Creak_Walk_$(#).ogg%40@0.3 110 0 0.1 0.1 0 2 0 24 3.5&quot;
+		0.857914 = &quot;Audio/Sound Effects/Footstep/Creak/Creak_Walk_$(#).ogg%40@0.3 110 0 0.1 0.1 0 2 0 24 3.5&quot;&quot;
+</code></pre>
+<p>There are some lines with excess whitespace at the end.</p>
 <h1><a class="header" href="#smd-layout" id="smd-layout">SMD Layout</a></h1>
 <p>The version described here is version 1. The file consists of two parts, the geometry with shapes and their attributes, with a possible tail of three variants, 2, 3 and 4 which contain skeleton-like things. There is no prior information indicating whether the tail is present or not before trying to read it.</p>
 <p>The format has changed over time with Path of Exile releases, listed chronologically:</p>
