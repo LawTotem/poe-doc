@@ -1,0 +1,633 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>PoE Format Specification</title>
+        
+        <meta name="robots" content="noindex" />
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">2.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">3.</strong> ARM</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">4.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">5.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">6.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">7.</strong> Index of File Extensions</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">PoE Format Specification</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
+<p>This book aims to be a comprehensive documentation effort for the file formats of Grinding Gear Games' game Path of Exile.</p>
+<p>As the formats are collaboratively reverse engineered any information should be considered educated guesswork and not ground truth so please beware of inaccuracies or speculation.</p>
+<h1><a class="header" href="#ggpk-layout" id="ggpk-layout">GGPK Layout</a></h1>
+<p>The pack file is made up of tagged chunks with <a href="https://en.wikipedia.org/wiki/Type-length-value">Type-Length-Value</a> structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.</p>
+<p>Positions in the file are indicated by 64-bit offsets from the file start, there is no relative addressing and there are no implicit chunk sequences, if there is a relation to another chunk it's always by explicit offset.</p>
+<p>The file begins with such a chunk of type <code>GGPK</code> which holds a list of byte locations in the file where top-level chunks of type <code>FREE</code> and <code>PDIR</code> may be found.</p>
+<p>Not all of the file contents are in active use. A singly-linked list of <code>FREE</code> chunks accounts unused space for use by the patcher or file compaction algorithms. Over time the pack may become fragmented as free space gets reused by chunks of varying size.</p>
+<p>The root directory of the pack is stored in the <code>PDIR</code> chunk referenced by the <code>GGPK</code> chunk. A directory contains offsets to chunks of either <code>PDIR</code> or <code>FILE</code> type.</p>
+<p>There are two hash algorithms used in the pack file, 32-bit Murmur2 accelerates pack entry lookups while <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> is used to hierarchically represent the contents of a directory tree for integrity checks and patching.</p>
+<h2><a class="header" href="#directory-entries" id="directory-entries">Directory entries</a></h2>
+<p>A directory contains a sequence of entries that are either files or directories. The type of the entry cannot be determined from within the directory itself, that information resides in the referenced chunk.</p>
+<p>The entries are stored in ascending 32-bit hash order according to <a href="https://en.wikipedia.org/wiki/MurmurHash#MurmurHash2">Murmur2</a> over the bytes of the lowercased UTF-16 name of the entry, not including the 16-bit terminator. These hashes can be used to quickly determine if a name does not exist in a directory, and as they are ordered they can be used to perform a binary search for entries in a large directory.</p>
+<h2><a class="header" href="#signature-computation" id="signature-computation">Signature computation</a></h2>
+<p>The 32-byte signature occurring in the <code>PDIR</code> and <code>FILE</code> chunks is computed with the SHA256 algorithm.</p>
+<p>For a file, it is the SHA-256 signature of the file contents.</p>
+<p>For a directory, the signature is the SHA-256 signature of the signature bytes of its entries in the order they occur in the directory.</p>
+<p>For example, given this directory:</p>
+<pre><code>D              e0d86aeb850da3b98eae86ec84113b12bea463a2c551e847d92dea626672deda Art/2DArt/Cursors/
+F        22000 8e2de0dada2f538b6b931575507ff3acfd4ac59fc08d17704e87a6669125a22e Art/2DArt/Cursors/cursor3.dds
+F        22000 20fdff6eb128b1c4c343be9c08842345683bdf824ea65107b64503fb7083ddd3 Art/2DArt/Cursors/cursor2.dds
+F        22000 4274f7e2ed49d9a3cbf1ff5455d03757fa51cc47d81d3750cf9b874d162dd3c9 Art/2DArt/Cursors/cursor1.dds
+</code></pre>
+<p>the signature is computed as such:</p>
+<pre><code>SHA256(
+    8e2de0dada2f538b6b931575507ff3acfd4ac59fc08d17704e87a6669125a22e
+    20fdff6eb128b1c4c343be9c08842345683bdf824ea65107b64503fb7083ddd3
+    4274f7e2ed49d9a3cbf1ff5455d03757fa51cc47d81d3750cf9b874d162dd3c9
+) = e0d86aeb850da3b98eae86ec84113b12bea463a2c551e847d92dea626672deda
+</code></pre>
+<h2><a class="header" href="#chunk-layouts" id="chunk-layouts">Chunk layouts</a></h2>
+<p>All chunks start with a header of 32-bit chunk length and four-octet tag, followed by a variable amount of data.</p>
+<h3><a class="header" href="#ggpk" id="ggpk">GGPK</a></h3>
+<pre><code class="language-cpp">u32 rec_len
+char tag[4]
+u32 child_count
+u64 child_offsets[child_count]
+</code></pre>
+<h3><a class="header" href="#free" id="free">FREE</a></h3>
+<pre><code class="language-cpp">u32 rec_len
+char tag[4]
+u64 next
+u8 data[rec_len-16]
+</code></pre>
+<h3><a class="header" href="#file" id="file">FILE</a></h3>
+<pre><code class="language-cpp">u32 rec_len
+char tag[4]
+u32 name_len
+u8 signature[32]
+u16 name[name_len] // terminated UTF-16LE
+u8 data[rec_len - 12 - 32 - name_len*2]
+</code></pre>
+<h3><a class="header" href="#pdir" id="pdir">PDIR</a></h3>
+<pre><code class="language-cpp">u32 rec_len
+char tag[4]
+u32 name_len
+u32 child_count
+u8 signature[32]
+u16 name[name_len]
+{
+  u32 hash // murmur2_32 hash of lowercased wide leaf, without terminator
+  u64 offset
+}[child_count]
+</code></pre>
+<h1><a class="header" href="#arm-layout" id="arm-layout">ARM Layout</a></h1>
+<p>ARM files are line-based text files describing composable &quot;rooms&quot;. There are several variable-length lists where the length is derived from numbers occuring earlier in the file.</p>
+<p>They describe a rectangular area filled with rectangular tiles of varying sizes and with a long list of per-tile attributes. There are also lists of things like doodads and decorative decals.</p>
+<p>Examples below mostly taken from Glacier's <code>hideout.arm</code>.</p>
+<h2><a class="header" href="#header" id="header">Header</a></h2>
+<p>Literal <code>&quot;version&quot;</code> followed by integer, ex. <code>version 29</code>.</p>
+<h2><a class="header" href="#entity-table" id="entity-table">Entity table</a></h2>
+<p>Integer count followed by that many quoted strings.</p>
+<h2><a class="header" href="#dimensions" id="dimensions">Dimensions?</a></h2>
+<ul>
+<li>v14-v21: Two integers, ex. <code>5 5</code>.</li>
+<li>v22-v29: Three integers, ex. <code>27 27 1</code>.</li>
+</ul>
+<h2><a class="header" href="#counted-apa" id="counted-apa">Counted apa?</a></h2>
+<p>Two integers, ex. <code>2 3</code>.</p>
+<h2><a class="header" href="#name" id="name">Name?</a></h2>
+<p>A possibly empty literal like <code>&quot;hideout&quot;</code>.</p>
+<h2><a class="header" href="#bepa-table" id="bepa-table">Bepa table?</a></h2>
+<p>v14-v15: Single integer.</p>
+<p>v16+: Two integers.</p>
+<h2><a class="header" href="#k-entry-solo" id="k-entry-solo">K-entry (solo)</a></h2>
+<p>One k-entry <code>k 27 27 0 0 0 0 81 81 40 46 81 81 25 31 1 1 6 6 0 0 0 0 0 0</code>. The first two values indicate the width and the height of the whole thing.</p>
+<p>The solo K-line has been observed to also be a <code>s</code> entry.</p>
+<h2><a class="header" href="#apa-entries" id="apa-entries">Apa entries</a></h2>
+<p><code>2 * (apa.0 + apa.1)</code> lines of integer pairs.</p>
+<p>Followed by nine (v14) or six (v29) counted lists of various kinds of entities:</p>
+<p>Integer count followed by a line like <code>364 482 0.872667 &quot;default&quot;</code>. X/Y/Z position + an identifier?</p>
+<h2><a class="header" href="#k-lines" id="k-lines">K-lines</a></h2>
+<p>Integer count of lines, which contains mixes of <code>f</code>, <code>k</code>, <code>n</code>, <code>o</code>, <code>s</code> and numbers at least <code>22</code> large.</p>
+<ul>
+<li><code>s</code> is probably empty or some sort of base;</li>
+<li><code>n</code> is a filler tile that is covered by a larger <code>k</code> tile;</li>
+<li><code>o</code> is unknown, appears in later versions;</li>
+<li><code>f</code> is followed by a single number.</li>
+</ul>
+<p><code>k</code> is followed by 23 numbers in v14-v18; 24 numbers in v19-29. The first two are the dimensions of that k-tile, the rest are possibly negative numbers.</p>
+<p>A <code>k</code>-tile of a size larger than 1x1 covers neighbouring <code>n</code>-tiles or may cover area outside of the width/height indicated in the solo k-entry.</p>
+<p>In versions (v14-v18) lacking the 24ths field the <code>k</code>-tile covers tiles in +X and +Y directions.</p>
+<p>In versions (v19+) the direction is indicated by the 24th field:</p>
+<ul>
+<li>0: +X and +Y, tile is in southwest corner of area - same as old versions;</li>
+<li>1: -X and +Y, tile is in southeast corner of area;</li>
+<li>2: -X and -Y, tile is in northeast corner of area;</li>
+<li>3: +X and -Y, tile is in northwest corner of area.</li>
+</ul>
+<p>Example of line:</p>
+<pre><code>k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 3 3 5 5 0 0 4 9 4 9 9 9 9 9 1 0 1 1 0 0 0 0 0 0 n n k 3 9 0 14 8 14 9 9 4 22 8 9 4 22 0 0 0 0 0 0 0 0 15 0 n n k 3 3 5 0 0 5 4 9 9 9 9 9 4 9 0 1 1 1 0 0 0 0 0 0 n n k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0 k 1 1 0 0 0 0 3 3 3 3 3 3 3 3 1 1 1 1 0 0 0 0 0 0
+</code></pre>
+<h2><a class="header" href="#assorted-footer-lists" id="assorted-footer-lists">Assorted footer lists</a></h2>
+<p>A sequence of counted lists follow, varying between versions.</p>
+<p>v14:</p>
+<ul>
+<li>doodads</li>
+<li>decals</li>
+</ul>
+<p>v15:</p>
+<ul>
+<li>doodads</li>
+<li>decals</li>
+<li>zero?</li>
+</ul>
+<p>v29:</p>
+<ul>
+<li>doodads</li>
+<li>always zero?</li>
+<li>decals</li>
+<li>zero?</li>
+<li>zero?</li>
+<li>zero?</li>
+</ul>
+<h3><a class="header" href="#doodads" id="doodads">Doodads</a></h3>
+<p>Integer count of lines, which contains a sequence of eleven numbers and two quoted strings, like:</p>
+<pre><code>300 470 1.5708 -5.47648e-13 -1.23634e-07 0.707107 0.707107 0 0 0 1 &quot;Metadata/Terrain/Doodads/Encampment/guildstash_v01_01.ao&quot; &quot;Metadata/MiscellaneousObjects/GuildStash&quot;
+609 330 -0 -0 0 -0 1 0 0 0 3.7 &quot;Metadata/Terrain/Doodads/Tools/invisible_blocker.ao&quot; &quot;Metadata/MiscellaneousObjects/Doodad&quot;
+</code></pre>
+<p>The first two numbers seems to be integers, followed by three reals in scientific notation, where the first number often is pi or half-pi. 
+This is followed by a pair of numbers whose magnitude is around 1, probably an 2D orientation.</p>
+<p>Finally three numbers (always 0 thus far) occur, followed by a single real that's often 1 but sometimes small values like 3.7.</p>
+<h3><a class="header" href="#decals" id="decals">Decals</a></h3>
+<p>To be described.</p>
+<h3><a class="header" href="#trailing-line" id="trailing-line">Trailing line</a></h3>
+<p>A line that often but not always has a number of elements that is related to the k-area extents like (width - 1) * (height - 1), that's to say, the number of 4-connections between tiles.</p>
+<p>It's often as sequence of small integers - typically zero and one more than the number of gtets.
+Sometimes this line has a lot of quoted strings - typically empty and sometimes with short contents.
+Sometimes this line has twice the number of elements and then has the strings first and numbers later.
+In some rare case the line has a few more elements than the predicted extents.</p>
+<h1><a class="header" href="#smd-layout" id="smd-layout">SMD Layout</a></h1>
+<p>The version described here is version 1. The file consists of two parts, the geometry with shapes and their attributes, with a possible tail of three variants, 2, 3 and 4 which contain skeleton-like things. There is no prior information indicating whether the tail is present or not before trying to read it.</p>
+<p>The format has changed over time with Path of Exile releases, listed chronologically:</p>
+<ul>
+<li>
+<p>2.5 introduces an optional tail section, always with tail version 2 if present.</p>
+</li>
+<li>
+<p>3.0 compresses the file with Brotli, where the compressed payload is prefixed by a seven byte header of <code>CMP</code> followed by the unpacked payload size as a little-endian <code>u32</code>.</p>
+</li>
+<li>
+<p>3.0 makes all tails mandatory.</p>
+</li>
+<li>
+<p>3.3 has the first occurence of tail version 3 alongside version 2.</p>
+</li>
+<li>
+<p>3.9 introduces tail version 4.</p>
+</li>
+</ul>
+<h2><a class="header" href="#geometry-section" id="geometry-section">Geometry section</a></h2>
+<p>The section starts with a fixed-size header with counts and sizes of the following parts.</p>
+<pre><code>ubyte version;
+uint32 triangle_count;
+uint32 vertex_count;
+byte const_04;
+uint16 shape_count;
+uint32 total_shape_name_cb;
+
+float bbox[6];
+
+struct {
+    uint32 name_cb, triangle_offset;
+} shape_info[shape_count];
+</code></pre>
+<p>The shape name list can be cheaply skipped by using the byte count from <code>total_shape_name_cb</code>.</p>
+<pre><code>local int i;
+for(i = 0; i &lt; shape_count; i++)
+{
+    struct {
+        wchar_t name[shape_info[i].name_cb / 2];
+    } shape;
+}
+</code></pre>
+<p>Vertex indices are either 32-bit or 16-bit based on the vertex count.</p>
+<pre><code>if (vertex_count &gt; 0xFFFF) {
+    uint32 indices[triangle_count * 3];
+}
+else {
+    uint16 indices[triangle_count * 3];
+}
+
+struct {
+    float p[3];
+    ubyte unk[8];
+    hfloat uv[2];
+    ubyte bones[4];
+    ubyte weights[4];
+} vertex[vertex_count];
+</code></pre>
+<h2><a class="header" href="#tail-section" id="tail-section">Tail section</a></h2>
+<p>The tail has two mapped versions, version 2 and version 3 and a largely unknown version 4.
+The blocks in version 2 seem to be a subset of the blocks in version 3.
+Both versions have some counts up-front and blocks of varying sizes with that many elements, with the following data types:</p>
+<pre><code>uint32 tail_version;
+
+typedef struct {
+    float f0[15];
+    uint32 u60;
+} tail_0_t;
+
+typedef struct {
+    float f0[4];
+    uint32 u16;
+} tail_1_t;
+
+typedef struct {
+    uint32 u0, u4;
+} tail_2_t;
+
+// tail_3_t is unknown, never occured in files
+
+typedef struct {
+    float vec0[3];
+    uint32 index12[4];
+    float weight28[4];
+} tail_4_t;
+
+typedef uint32 tail_5_t;
+typedef uint32 tail_6_t;
+</code></pre>
+<pre><code>if (tail_version == 3) {
+    uint32 tail_counts[7];
+    if (tail_counts[0] &gt; 0) {
+        tail_0_t sec0[tail_counts[0]];
+    }
+    if (tail_counts[1] &gt; 0) {
+        tail_1_t sec1[tail_counts[1]];
+    }
+    if (tail_counts[2] &gt; 0) {
+        tail_2_t sec2[tail_counts[2]];
+    }
+    // tail_counts[3] is always zero in all files, type unknown
+    if (tail_counts[4] &gt; 0) {
+        tail_4_t sec4[tail_counts[4]];
+    }
+    // Sections 5 and 6 are both u32:s, might be swapped
+    if (tail_counts[5] &gt; 0) {
+        tail_5_t sec5[tail_counts[5]];
+    }
+    if (tail_counts[6] &gt; 0) {
+        tail_6_t sec6[tail_counts[6]];
+    }
+}
+</code></pre>
+<p>Note that version 2 has the blocks in a strange order, both count-wise and compared to version 3.</p>
+<p>It is possible that the mapping from v2 to v3 blocks I've made is not accurate, as the two u32-type blocks are hard to tell apart.</p>
+<pre><code>if (tail_version == 2) {
+    uint32 tail_counts[4];
+    if (tail_counts[1] &gt; 0) {
+        tail_4_t sec4[tail_counts[1]];
+    }
+    if (tail_counts[2] &gt; 0) {
+        tail_5_t sec1[tail_counts[2]];
+    }
+    if (tail_counts[0] &gt; 0) {
+        tail_0_t sec0[tail_counts[0]];
+    }
+    if (tail_counts[3] &gt; 0) {
+        tail_6_t sec3[tail_counts[3]];
+    }
+}
+</code></pre>
+<blockquote>
+<p><code>WorldAreas.dat</code> contains Topologies referencing dgrfile (Digital Graph Document) which points to MasterFile (<code>.tsi</code>) containing a <code>.rs</code> filename which in turn maps to <code>.arm</code> files.</p>
+</blockquote>
+<ul>
+<li>
+<p>WorldAreas</p>
+<pre><code>ID: 2
+Name: The Twilight Strand
+Topologies: 0, 1, 2
+</code></pre>
+</li>
+<li>
+<p>Topologies</p>
+<pre><code>ID: 0
+DGR: Metadata/Terrain/Act1/Area1/Graphs/macro_beach4.tgr
+</code></pre>
+</li>
+<li>
+<p><code>Metadata/Terrain/Act1/Area1/Graphs/macro_beach4.tgr</code></p>
+<pre><code>MasterFile: &quot;Metadata/Terrain/Act1/Area1/master.tsi&quot;
+</code></pre>
+</li>
+<li>
+<p><code>Metadata/Terrain/Act1/Area1/master.tsi</code></p>
+<pre><code>RoomSet                 &quot;room_tiles.rs&quot;
+</code></pre>
+</li>
+<li>
+<p><code>Metadata/Terrain/Act1/Area1/room_tiles.rs</code></p>
+<pre><code>version 2
+&quot;Metadata/Terrain/Act1/Area1/Rooms/town_entrance_exclude.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/washed_up3.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/largecliff_wall_1a.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/largecliff_wall_2a.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/largecliff_wall_3a.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/largecliff_wall_4a.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/stream_shore_1.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/stream_shore_2.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/cliff_nests.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/cliff_nests2.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/cliff_nests3.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/cliff_beach.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/streams.arm&quot;
+&quot;Metadata/Terrain/Act1/Area1/Rooms/tutorial_01.arm&quot;
+</code></pre>
+</li>
+</ul>
+<p>Objects in the game are specified by <code>.ao/.aoc</code> files which may reference other files for fixed meshes, rigs and skinned meshes. Most <code>.ao</code> files have similarly named <code>.aoc</code> files which contain client-only information about an item that the server does not need like their visuals and sounds. The <code>.ao</code> files often appear in lists in <code>.dat</code> tables to connect the logical ID of an item with their drop models and 3D art.</p>
+<p>An example relationship for the Starforge item:</p>
+<p><code>ItemVisualIdentityID</code> is <code>UniqueTwoHandSword12</code> referencing <code>Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.ao</code> for the drop model and <code>Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdge.ao</code> for the held 3D art.</p>
+<p>The objects/meshes involved are:</p>
+<pre><code>Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.amd
+Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.ast
+Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.sm
+Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdge.fmt
+Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdge.ao
+Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdge.aoc
+Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.ao
+Metadata/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.aoc
+</code></pre>
+<p>The held model's appearance is governed by these components:</p>
+<pre><code>FixedMesh
+{
+	fixed_mesh = &quot;Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdge.fmt&quot;
+}
+
+ParticleEffects
+{
+	continuous_effect = &quot;blade Metadata/Effects/Microtransactions/Weapon_effects/uniques/StarForge/blade.pet&quot;
+}
+
+TrailsEffects
+{
+	continuous_effect = &quot;blade Metadata/Effects/Microtransactions/Weapon_effects/uniques/StarForge/blade.trl&quot;
+}
+</code></pre>
+<p>The drop model's appearance is goverened by these components:</p>
+<pre><code>ClientAnimationController
+{
+	skeleton = &quot;Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.ast&quot;
+}
+
+SkinMesh
+{
+	skin = &quot;Art/Models/Items/Weapons/TwoHandWeapons/TwoHandSwords/uniques/StarforgedEdgeDrop.sm&quot;
+}
+</code></pre>
+<ul>
+<li>.act = Actor, UCS-2 plain</li>
+<li>.ais = AI Script, UCS-2 plain</li>
+<li>.amd = Animated Meta Data, UCS-2 plain</li>
+<li>.ao = Animated Object, UCS-2 plain</li>
+<li>.aoc = Animated Object Controller, UCS-2 plain</li>
+<li>.arm = Rooms, UCS-2 plain</li>
+<li>.ast = Skeleton, Binary</li>
+<li>.bank = FMOD Sound Bank, Binary</li>
+<li>.bk2 = Bink Video, Binary</li>
+<li>.cht = Chest Data, UCS-2 plain</li>
+<li>.dat = Game Data</li>
+<li>.dat64 = Game Data 64bits</li>
+<li>.dds = Texture, brotli compress or soft link</li>
+<li>.ddt = Doodads, UCS-2 plain</li>
+<li>.dlp = Doodads, UCS-2 plain</li>
+<li>.dgr = Digital Graph Document, UCS-2 plain</li>
+<li>.env = Environments, UCS-2 plain</li>
+<li>.filter = Loot Filter, UTF-8</li>
+<li>.ffx = FFX Render, UCS-2 plain</li>
+<li>.fx = Shader, Ascii</li>
+<li>.gm = Grandmaster, Binary</li>
+<li>.gt = Ground Types, UCS-2 plain</li>
+<li>.hlsl = Shader, Ascii</li>
+<li>.mat = Material, UCS-2 plain</li>
+<li>.ogg = Digital Multimedia, Binary</li>
+<li>.ot = Object Type, UCS-2 plain</li>
+<li>.otc = Object Type Codes, UCS-2 plain</li>
+<li>.pet = Particle Effect, Binary</li>
+<li>.pjd = Passive Jewel Data, Binary</li>
+<li>.psg = Passive Skill Graphic, Binary</li>
+<li>.rs = Room Set, UCS-2 plain</li>
+<li>.sm = Skin Mesh, UCS-2 plain</li>
+<li>.smd = Skin Mesh Data, binary</li>
+<li>.spritefont = Raster Font Data, Binary</li>
+<li>.tgt = Tile Group, UCS-2 plain</li>
+<li>.txt = Text, UCS-2 plain</li>
+<li>.ui = User Interface, UCS-2 plain</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>
