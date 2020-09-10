@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GGPK - PoE Format Specification</title>
+        <title>GGPK (legacy) - PoE Format Specification</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="ggpk.html" class="active"><strong aria-hidden="true">2.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">3.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">4.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">5.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">6.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">7.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">8.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html" class="active"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,7 +159,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#ggpk-layout" id="ggpk-layout">GGPK Layout</a></h1>
+                        <h1><a class="header" href="#ggpk-layout-legacy" id="ggpk-layout-legacy">GGPK Layout (Legacy)</a></h1>
 <p>The pack file is made up of tagged chunks with <a href="https://en.wikipedia.org/wiki/Type-length-value">Type-Length-Value</a> structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.</p>
 <p>Positions in the file are indicated by 64-bit offsets from the file start, there is no relative addressing and there are no implicit chunk sequences, if there is a relation to another chunk it's always by explicit offset.</p>
 <p>The file begins with such a chunk of type <code>GGPK</code> which holds a list of byte locations in the file where top-level chunks of type <code>FREE</code> and <code>PDIR</code> may be found.</p>
@@ -226,7 +226,7 @@ u16 name[name_len]
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="bundles.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
@@ -244,7 +244,7 @@ u16 name[name_len]
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="bundles.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 

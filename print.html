@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">2.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">3.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">4.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">5.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">6.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">7.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">8.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -164,7 +164,32 @@
                         <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
 <p>This book aims to be a comprehensive documentation effort for the file formats of Grinding Gear Games' game Path of Exile.</p>
 <p>As the formats are collaboratively reverse engineered any information should be considered educated guesswork and not ground truth so please beware of inaccuracies or speculation.</p>
-<h1><a class="header" href="#ggpk-layout" id="ggpk-layout">GGPK Layout</a></h1>
+<h1><a class="header" href="#bundle-file-scheme" id="bundle-file-scheme">Bundle file scheme</a></h1>
+<p>As of patch 3.11.2 for Harvest preparing for the launch of Heist the distribution method and patching of Path of Exile changed from the previous monolithic <code>Content.ggpk</code> file to a system of multiple bundles more akin to what has previously been deployed for console game clients.</p>
+<p>On Steam there are tens of thousands of bundle files each containing related assets which makes it easier for Steam to do its write-a-new-file type of atomic patching as files will be smaller. In the Standalone client the bundles are contained in a <code>Content.ggpk</code> with a bogus node count of 3 but retaining the existing <code>PDIR</code> and <code>FILE</code> structure for patching.</p>
+<h2><a class="header" href="#bundle-file-format" id="bundle-file-format">Bundle file format</a></h2>
+<p>Bundles start with a fixed header indicating among other things what appears to be the uncompressed(?) bundle size and the total size of payloads in the bundle. There's a list of absolute sizes for entries in the file, whose length sum up to the total payload size.</p>
+<p>A work-in-progress 010 Editor template for the file:</p>
+<pre><code>uint32 uncompressed_size;
+uint32 total_payload_size;
+uint32 unk08[3];
+uint32 uncompressed_size2;
+uint32 unk18;
+uint32 total_payload_size2;
+uint32 unk20;
+uint32 entry_count;
+uint32 unk28[5];
+uint32 entry_sizes[entry_count];
+
+local int i &lt;hidden=true&gt;;
+for (i = 0; i &lt; entry_count; ++i) {
+	struct entry_t {
+		byte data[entry_sizes[i]];
+	} entry;
+}
+</code></pre>
+<p>File entries seem to as far as have been observed start with the octets <code>8C 0C</code> or <code>8C 06</code>, with some slivers of plaintext like <code>&quot;DDS &quot;</code> occurring in the payload but with bogus values for fields, hinting at some sort of compression.</p>
+<h1><a class="header" href="#ggpk-layout-legacy" id="ggpk-layout-legacy">GGPK Layout (Legacy)</a></h1>
 <p>The pack file is made up of tagged chunks with <a href="https://en.wikipedia.org/wiki/Type-length-value">Type-Length-Value</a> structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.</p>
 <p>Positions in the file are indicated by 64-bit offsets from the file start, there is no relative addressing and there are no implicit chunk sequences, if there is a relation to another chunk it's always by explicit offset.</p>
 <p>The file begins with such a chunk of type <code>GGPK</code> which holds a list of byte locations in the file where top-level chunks of type <code>FREE</code> and <code>PDIR</code> may be found.</p>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>AO/AOC - PoE Format Specification</title>
+        <title>Bundles - PoE Format Specification</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html" class="active"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html" class="active"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,103 +159,44 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#ao--aoc-file-structure" id="ao--aoc-file-structure">AO / AOC file structure</a></h1>
-<p>This describes version 2 of the file format which is the only one that has existed in public since the release of PoE 1.0.</p>
-<p>These two closely related file types contain a set of components that describe the visuals and effects of an object in the game world.</p>
-<p>The files are UTF-16LE with a BOM and Windows CRLF newlines. They may have C-style <code>/* comments */</code> spanning multiple lines.</p>
-<p>They begin with a version line which here is <code>version 2</code>. This is followed by one or more <code>extends &quot;x&quot;</code> lines which either references another file by full path or is the special string <code>&quot;nothing&quot;</code> for bases.</p>
-<h2><a class="header" href="#components" id="components">Components</a></h2>
-<p>Components are denoted by an unquoted name and the component members inside curly braces - an empty component looks like <code>ClientAnimationController { }</code>. Components may appear multiple times in the same file as &quot;forward declarations&quot; according to comments in the similar OT/OTC file formats.</p>
-<p>The members of a component are indented with one tab and seem to be able to have values of string, boolean, integer and floating point types like:</p>
-<pre><code>    x = &quot;hi there&quot;
-    y = true
-    z = 3.1415f
-    w = 10
-</code></pre>
-<p>Some component members have a list of additional lines, indented by two tabs. These include <code>animation</code> and <code>continuous_effect</code>.</p>
-<pre><code>	animation = &quot;throw&quot;
-		2.25226 = &quot;throw_trl Metadata/Particles/monster_effects/act10/oriath_children/apple_blast.pet&quot;
-</code></pre>
-<pre><code>    animation = &quot;throw&quot;
-		2.12065,0.209613 = &quot;throw_trl Metadata/Particles/monster_effects/act10/oriath_children/throw_trl.trl&quot;
-</code></pre>
-<pre><code>	continuous_effect = &quot;wake vortex&quot;
-		size = &quot;100.0 100.0 100.0&quot;
-		duration = 5.0
-		is_persistent = true
-		shape = &quot;Wake&quot;
-		is_attached = true	
-		bone_name = &quot;root&quot;
-</code></pre>
-<p>The possible components seem to be documented in the files for <code>Parent_AssetViewer</code> as follows:</p>
-<p><code>Metadata/Parent_AssetViewer.ao</code></p>
-<pre><code>version 2
-extends &quot;nothing&quot;
+                        <h1><a class="header" href="#bundle-file-scheme" id="bundle-file-scheme">Bundle file scheme</a></h1>
+<p>As of patch 3.11.2 for Harvest preparing for the launch of Heist the distribution method and patching of Path of Exile changed from the previous monolithic <code>Content.ggpk</code> file to a system of multiple bundles more akin to what has previously been deployed for console game clients.</p>
+<p>On Steam there are tens of thousands of bundle files each containing related assets which makes it easier for Steam to do its write-a-new-file type of atomic patching as files will be smaller. In the Standalone client the bundles are contained in a <code>Content.ggpk</code> with a bogus node count of 3 but retaining the existing <code>PDIR</code> and <code>FILE</code> structure for patching.</p>
+<h2><a class="header" href="#bundle-file-format" id="bundle-file-format">Bundle file format</a></h2>
+<p>Bundles start with a fixed header indicating among other things what appears to be the uncompressed(?) bundle size and the total size of payloads in the bundle. There's a list of absolute sizes for entries in the file, whose length sum up to the total payload size.</p>
+<p>A work-in-progress 010 Editor template for the file:</p>
+<pre><code>uint32 uncompressed_size;
+uint32 total_payload_size;
+uint32 unk08[3];
+uint32 uncompressed_size2;
+uint32 unk18;
+uint32 total_payload_size2;
+uint32 unk20;
+uint32 entry_count;
+uint32 unk28[5];
+uint32 entry_sizes[entry_count];
 
-/*
-    This file contains all components needed by an AO.
-    Strictly for use in the asset viewer!
-*/
-
-BaseAnimationEvents { }
-AnimationController { }
-AttachedAnimatedObject { }
-Hull { }
+local int i &lt;hidden=true&gt;;
+for (i = 0; i &lt; entry_count; ++i) {
+	struct entry_t {
+		byte data[entry_sizes[i]];
+	} entry;
+}
 </code></pre>
-<p><code>Metadata/Parent_AssetViewer.aoc</code></p>
-<pre><code>version 2
-extends &quot;nothing&quot;
-
-/*
-    This file contains all components needed by an AO.
-    Strictly for use in the asset viewer!
-*/
-
-ClientAnimationController { }
-AnimatedRender { }
-SkinMesh { }
-SoundEvents { }
-BoneGroups { }
-ParticleEffects { }
-TrailsEffects { }
-DecalEvents { }
-Lights { }
-EffectPack { }
-ScreenShake { }
-WindEvents {}
-SoundParams { }
-</code></pre>
-<h2><a class="header" href="#observed-inconsistencies-and-mistakes" id="observed-inconsistencies-and-mistakes">Observed inconsistencies and mistakes</a></h2>
-<p>Some files seem to bear evidence of having been hand-edited with quoting mistakes and indentation errors.</p>
-<p>One file has an errant tab at the start of the version line:</p>
-<pre><code>    version 2
-</code></pre>
-<p>One file has two excess tabs before an animation block, putting it deeper than the keyframes of the surrounding animations:</p>
-<pre><code>    animation = &quot;a&quot;
-        0.1234 = &quot;...&quot;
-            animation = &quot;b&quot;
-        0.1234 = &quot;...&quot;
-    animation = &quot;c&quot;
-        0.1234 = &quot;...&quot;
-</code></pre>
-<p>One file has unbalanced quoted strings in an animation block, where one particular string ends with two double quotes:</p>
-<pre><code>		0.432554 = &quot;Audio/Sound Effects/Footstep/Creak/Creak_Walk_$(#).ogg%40@0.3 110 0 0.1 0.1 0 2 0 24 3.5&quot;
-		0.857914 = &quot;Audio/Sound Effects/Footstep/Creak/Creak_Walk_$(#).ogg%40@0.3 110 0 0.1 0.1 0 2 0 24 3.5&quot;&quot;
-</code></pre>
-<p>There are some lines with excess whitespace at the end.</p>
+<p>File entries seem to as far as have been observed start with the octets <code>8C 0C</code> or <code>8C 06</code>, with some slivers of plaintext like <code>&quot;DDS &quot;</code> occurring in the payload but with bogus values for fields, hinting at some sort of compression.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="arm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="smd.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="ggpk.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -267,13 +208,13 @@ SoundParams { }
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="arm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="smd.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="ggpk.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
