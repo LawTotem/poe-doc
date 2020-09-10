@@ -1,7 +1,8 @@
 # Summary
 
 - [Introduction](introduction.md)
-- [GGPK](ggpk.md)
+- [Bundles](bundles.md)]
+- [GGPK (legacy)](ggpk.md)
 - [ARM](arm.md)
 - [AO/AOC](ao-aoc.md)
 - [SMD](smd.md)

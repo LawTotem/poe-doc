@@ -1,4 +1,4 @@
-# GGPK Layout
+# GGPK Layout (Legacy)
 
 The pack file is made up of tagged chunks with [Type-Length-Value](https://en.wikipedia.org/wiki/Type-length-value) structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.
 
