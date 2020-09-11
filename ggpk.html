@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>GGPK (legacy) - PoE Format Specification</title>
+        <title>GGPK - PoE Format Specification</title>
         
         
 
@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html" class="active"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html" class="active"><strong aria-hidden="true">3.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,10 +159,11 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#ggpk-layout-legacy" id="ggpk-layout-legacy">GGPK Layout (Legacy)</a></h1>
+                        <h1><a class="header" href="#ggpk-layout" id="ggpk-layout">GGPK Layout</a></h1>
 <p>The pack file is made up of tagged chunks with <a href="https://en.wikipedia.org/wiki/Type-length-value">Type-Length-Value</a> structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.</p>
 <p>Positions in the file are indicated by 64-bit offsets from the file start, there is no relative addressing and there are no implicit chunk sequences, if there is a relation to another chunk it's always by explicit offset.</p>
 <p>The file begins with such a chunk of type <code>GGPK</code> which holds a list of byte locations in the file where top-level chunks of type <code>FREE</code> and <code>PDIR</code> may be found.</p>
+<p>For the Standalone game in patch 3.11.2 the value previously thought to describe the number of direct child chunks of the <code>GGPK</code> chunk has increased from <code>2</code> to <code>3</code> without another chunk being introduced, which means that it's probably a version number. In that new scheme, the GGPK file mostly contains <a href="bundles.html">bundles</a> of files instead of loose files, next to some video and audio assets.</p>
 <p>Not all of the file contents are in active use. A singly-linked list of <code>FREE</code> chunks accounts unused space for use by the patcher or file compaction algorithms. Over time the pack may become fragmented as free space gets reused by chunks of varying size.</p>
 <p>The root directory of the pack is stored in the <code>PDIR</code> chunk referenced by the <code>GGPK</code> chunk. A directory contains offsets to chunks of either <code>PDIR</code> or <code>FILE</code> type.</p>
 <p>There are two hash algorithms used in the pack file, 32-bit Murmur2 accelerates pack entry lookups while <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> is used to hierarchically represent the contents of a directory tree for integrity checks and patching.</p>
@@ -191,8 +192,8 @@ F        22000 4274f7e2ed49d9a3cbf1ff5455d03757fa51cc47d81d3750cf9b874d162dd3c9 
 <h3><a class="header" href="#ggpk" id="ggpk">GGPK</a></h3>
 <pre><code class="language-cpp">u32 rec_len
 char tag[4]
-u32 child_count
-u64 child_offsets[child_count]
+u32 version
+u64 child_offsets[2]
 </code></pre>
 <h3><a class="header" href="#free" id="free">FREE</a></h3>
 <pre><code class="language-cpp">u32 rec_len

@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html" class="active"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">3.</strong> GGPK (legacy)</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html" class="active"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">3.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">4.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">5.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">6.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">7.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">8.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">9.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -165,28 +165,30 @@
 <h2><a class="header" href="#bundle-index-format" id="bundle-index-format">Bundle index format</a></h2>
 <p>At the top level of the bundle tree there are some files beginning with underscores that seem to be detached from the typical directory structure, two of which seem to form the root of the hierarchy: <code>_.index.bin</code> and <code>_.index.txt</code>.</p>
 <p>The UTF-8 encoded text file contains more than half a million lines of path-like strings. The file seems to be loosely delineated by a bundle basename followed by a sequence of files that might belong to that bundle.</p>
+<p>The contents of the corresponding <code>.bin</code> file is not yet known but is likely to correlate with the lines of the <code>.txt</code> file.</p>
 <h2><a class="header" href="#bundle-file-format" id="bundle-file-format">Bundle file format</a></h2>
-<p>Bundles start with a fixed header indicating among other things what appears to be the uncompressed(?) bundle size and the total size of payloads in the bundle. There's a list of absolute sizes for entries in the file, whose length sum up to the total payload size.</p>
-<p>A work-in-progress 010 Editor template for the file:</p>
+<p>Bundles start with a fixed header indicating among other things what appears to be the uncompressed(?) bundle size and the total compressed size of payloads in the bundle. There's a list of absolute sizes for compressed chunks in the file, whose length sum up to the total compressed payload size.</p>
+<p>A work-in-progress 010 Editor template for the bundle file:</p>
 <pre><code>uint32 uncompressed_size;
 uint32 total_payload_size;
-uint32 unk08[3];
-uint32 uncompressed_size2;
-uint32 unk18;
-uint32 total_payload_size2;
-uint32 unk20;
-uint32 entry_count;
-uint32 unk28[5];
-uint32 entry_sizes[entry_count];
-
+uint32 head_payload_size;
+struct head_payload_t {
+    enum &lt;uint32&gt; {Kraken_6 = 8, Mermaid_A = 9, Leviathan_C = 13 } first_file_encode;
+    uint32 unk10;
+    uint64 uncompressed_size2;
+    uint64 total_payload_size2;
+    uint32 entry_count;
+    uint32 unk28[5];
+    uint32 entry_sizes[entry_count];
+} head;
 local int i &lt;hidden=true&gt;;
-for (i = 0; i &lt; entry_count; ++i) {
-	struct entry_t {
-		byte data[entry_sizes[i]];
-	} entry;
+for (i = 0; i &lt; head.entry_count; ++i) {
+    struct entry_t {
+        byte data[head.entry_sizes[i]];
+    } entry;
 }
 </code></pre>
-<p>File entries seem to as far as have been observed start with the octets <code>8C 0C</code> or <code>8C 06</code>, with some slivers of plaintext like <code>&quot;DDS &quot;</code> occurring in the payload but with bogus values for fields, hinting at some sort of compression.</p>
+<p>File chunks seem to start with octet pairs like <code>8C 0C</code> and <code>8C 06</code>, with some slivers of plaintext like <code>&quot;DDS &quot;</code> occurring in the payload. These are Oodle headers for the Kraken and Leviathan compression methods. All decompressed chunk sizes but the last one seem to be 256k in size, which incidentally seems to be the value in <code>unk28[0]</code>.</p>
 
                     </main>
 
