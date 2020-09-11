@@ -1,10 +1,12 @@
-# GGPK Layout (Legacy)
+# GGPK Layout
 
 The pack file is made up of tagged chunks with [Type-Length-Value](https://en.wikipedia.org/wiki/Type-length-value) structure, where a fixed-size header of chunk length and chunk type preceeds an amount of data particular to the type of the chunk.
 
 Positions in the file are indicated by 64-bit offsets from the file start, there is no relative addressing and there are no implicit chunk sequences, if there is a relation to another chunk it's always by explicit offset.
 
 The file begins with such a chunk of type `GGPK` which holds a list of byte locations in the file where top-level chunks of type `FREE` and `PDIR` may be found.
+
+For the Standalone game in patch 3.11.2 the value previously thought to describe the number of direct child chunks of the `GGPK` chunk has increased from `2` to `3` without another chunk being introduced, which means that it's probably a version number. In that new scheme, the GGPK file mostly contains [bundles](bundles.md) of files instead of loose files, next to some video and audio assets.
 
 Not all of the file contents are in active use. A singly-linked list of `FREE` chunks accounts unused space for use by the patcher or file compaction algorithms. Over time the pack may become fragmented as free space gets reused by chunks of varying size.
 
@@ -50,8 +52,8 @@ All chunks start with a header of 32-bit chunk length and four-octet tag, follow
 ```cpp
 u32 rec_len
 char tag[4]
-u32 child_count
-u64 child_offsets[child_count]
+u32 version
+u64 child_offsets[2]
 ```
 
 ### FREE
