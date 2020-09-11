@@ -4,6 +4,11 @@ As of patch 3.11.2 for Harvest preparing for the launch of Heist the distributio
 
 On Steam there are tens of thousands of bundle files each containing related assets which makes it easier for Steam to do its write-a-new-file type of atomic patching as files will be smaller. In the Standalone client the bundles are contained in a `Content.ggpk` with a bogus node count of 3 but retaining the existing `PDIR` and `FILE` structure for patching.
 
+## Bundle index format
+At the top level of the bundle tree there are some files beginning with underscores that seem to be detached from the typical directory structure, two of which seem to form the root of the hierarchy: `_.index.bin` and `_.index.txt`.
+
+The UTF-8 encoded text file contains more than half a million lines of path-like strings. The file seems to be loosely delineated by a bundle basename followed by a sequence of files that might belong to that bundle.
+
 ## Bundle file format
 Bundles start with a fixed header indicating among other things what appears to be the uncompressed(?) bundle size and the total size of payloads in the bundle. There's a list of absolute sizes for entries in the file, whose length sum up to the total payload size.
 
