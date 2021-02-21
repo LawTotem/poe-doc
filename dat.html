@@ -3,10 +3,8 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title></title>
+        <title>DAT - PoE Format Specification</title>
         
-        
-        <base href="/">
         
 
 
@@ -95,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="dat.html"><strong aria-hidden="true">3.</strong> DAT</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">4.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">5.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">6.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">7.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">8.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">9.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">10.</strong> Index of File Extensions</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="bundles.html"><strong aria-hidden="true">2.</strong> Bundles</a></li><li class="chapter-item expanded "><a href="dat.html" class="active"><strong aria-hidden="true">3.</strong> DAT</a></li><li class="chapter-item expanded "><a href="ggpk.html"><strong aria-hidden="true">4.</strong> GGPK</a></li><li class="chapter-item expanded "><a href="arm.html"><strong aria-hidden="true">5.</strong> ARM</a></li><li class="chapter-item expanded "><a href="ao-aoc.html"><strong aria-hidden="true">6.</strong> AO/AOC</a></li><li class="chapter-item expanded "><a href="smd.html"><strong aria-hidden="true">7.</strong> SMD</a></li><li class="chapter-item expanded "><a href="area-generation.html"><strong aria-hidden="true">8.</strong> Notes on Area Generation</a></li><li class="chapter-item expanded "><a href="meshes.html"><strong aria-hidden="true">9.</strong> Notes on Meshes</a></li><li class="chapter-item expanded "><a href="extensions.html"><strong aria-hidden="true">10.</strong> Index of File Extensions</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -161,15 +159,53 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#document-not-found-404" id="document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1><a class="header" href="#dat-layout" id="dat-layout">DAT Layout</a></h1>
+<p>The <code>.dat</code> family of files store a lot of the metadata in tabular format. There are four variations on the format:</p>
+<ul>
+<li><code>.dat</code> - 32-bit references and UTF-16LE strings;</li>
+<li><code>.dat64</code> - 64-bit references and UTF-16LE strings;</li>
+<li><code>.datl</code> - 32-bit references and UTF-32LE strings;</li>
+<li><code>.datl64</code> - 64-bit references and UTF-32LE strings.</li>
+</ul>
+<p>The <code>l</code> variant was introduced with the macOS client but all four variants are present on all the PC platforms.</p>
+<h2><a class="header" href="#32-bit-dat" id="32-bit-dat">32-bit DAT</a></h2>
+<p>A <code>dat</code> file has two parts, one fixed-width and one with free-form data.</p>
+<p>The fixed-width section has a leading <code>u32</code> with the number of rows, followed by tightly packed rows with fixed-width fields adhering to an implicit specification that is not known.</p>
+<p>The free-form section starts with a delimiter of eight <code>0xBB</code> bytes, making it possible to determine the expected width of a row by searching the file for the delimiter. All offsets into the free-form section include the delimiter so the first byte of valid data is at offset <code>8</code>.</p>
+<p>The fields contain either:</p>
+<ul>
+<li>inline primitive fixed-width data,</li>
+<li>offsets into the free-form section with field data,</li>
+<li>offsets into the free-form section to a null-terminated string literal,</li>
+<li>offsets and count for a list of field elements,</li>
+<li>foreign integer keys into other tables.</li>
+</ul>
+<p>Fields may represent <code>NULL</code>/<code>None</code> by repeating <code>0xFE</code>. Note that fields in the free-form section can again be references to the free-form section, a row field can for example be <code>list-of-string</code> or <code>list-of-list-of-int</code>.</p>
+<p>A list field entry contains two <code>u32</code>, one with the element count and one with the offset into the free-form section.</p>
+<p>A string field entry has a single <code>u32</code> with the offset into the free-form section. This offset has been observed to be to the end of the free-form section so make sure to check bounds.</p>
+<h2><a class="header" href="#64-bit-dat" id="64-bit-dat">64-bit DAT</a></h2>
+<p>64-bit DAT files are like 32-bit DAT files, except that some types are doubled in size to reflect the 64-bit <code>size_t</code> of the platform. These include reference offsets, foreign keys, and list counts.</p>
+<h2><a class="header" href="#external-specification-sources" id="external-specification-sources">External specification sources</a></h2>
+<p>There are some community efforts of guessed specifications that have been built over time, these include:</p>
+<ul>
+<li><a href="https://github.com/OmegaK2/PyPoE/">PyPoE</a>, which has an extensive <a href="https://github.com/OmegaK2/PyPoE/blob/dev/PyPoE/poe/file/specification/data/stable.py"><code>stable.py</code></a> specification that can be exported into ordered JSON;</li>
+<li><a href="https://github.com/PathOfBuildingCommunity/PathOfBuilding/">PathOfBuilding</a>, which has similar information in <a href="https://github.com/PathOfBuildingCommunity/PathOfBuilding/blob/dev/Export/spec.lua"><code>Export/spec.lua</code></a>, detailing the tables and fields they use.</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
+                            <a rel="prev" href="bundles.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
 
+                        
+                            <a rel="next" href="ggpk.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
 
                         <div style="clear: both"></div>
@@ -179,7 +215,15 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
+                    <a rel="prev" href="bundles.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
+                
+                    <a rel="next" href="ggpk.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                 
             </nav>
 
