@@ -14,12 +14,25 @@ The format has changed over time with Path of Exile releases, listed chronologic
 
  * 3.9 introduces tail version 4.
 
+## File Version Indicator
+
+The files start with a single byte which indicates the smd file version.
+
+```
+ubyte version;
+```
+
+Version 1, 2, and 3 have been observed.
+
 ## Geometry section
+
+All three files go on to describe the geometry and texture mapping of the model.
+
+### Version 1
 
 The section starts with a fixed-size header with counts and sizes of the following parts.
 
 ```
-ubyte version;
 uint32 triangle_count;
 uint32 vertex_count;
 byte const_04;
@@ -27,13 +40,18 @@ uint16 shape_count;
 uint32 total_shape_name_cb;
 
 float bbox[6];
+```
 
+For each shape in `shape_count` there is a string size and offset into a triangle array described.
+
+```
 struct {
     uint32 name_cb, triangle_offset;
 } shape_info[shape_count];
 ```
 
-The shape name list can be cheaply skipped by using the byte count from `total_shape_name_cb`.
+The array of shape names follows, which can be cheaply skipped by using the byte count from `total_shape_name_cb`.
+**Note**: The `name_cb` values list the size of the shape names in bytes but the shape names are stored as 2 byte `wchars`.
 
 ```
 local int i;
@@ -46,6 +64,74 @@ for(i = 0; i < shape_count; i++)
 ```
 
 Vertex indices are either 32-bit or 16-bit based on the vertex count.
+
+```
+if (vertex_count > 0xFFFF) {
+    uint32 indices[triangle_count * 3];
+}
+else {
+    uint16 indices[triangle_count * 3];
+}
+
+struct {
+    float p[3];
+    ubyte unk[8];
+    hfloat uv[2];
+    ubyte bones[4];
+    ubyte weights[4];
+} vertex[vertex_count];
+```
+
+**Note**: that `hfloat` refers to half float or float16.
+
+### Version 2
+
+Version 2 files appear to be mostly identical to version 1 in the geometry section, except for an introduction of a 4 byte buffer between the bounding box, `bbox` and the shape array `shape_info`.
+
+```
+uint32 triangle_count;
+uint32 vertex_count;
+byte const_04;
+uint16 shape_count;
+uint32 total_shape_name_cb;
+
+float bbox[6];
+
+uint32 const_04_2;
+
+struct {
+    uint32 name_cb, triangle_offset;
+} shape_info[shape_count];
+```
+
+### Version 3
+
+Information on version 3 is based on very little actual detail.
+
+Version 3 are laid out a little different and have some additional information.
+
+```
+ubyte const_04;
+uint32 shape_count;
+uint32 unknown_01;
+float bbox[6];
+uint32 triangle_count;
+uint32 vertex_count;
+uint32 unknown_02;
+uint32 unknown_03;
+```
+
+The actual shape information has a bit more flexibility specifying the triangle offset and number of triangles per shape, but shapes do not have names.
+**Note**: The offset and number of triangles are given in indices with 3 indices per triangle.
+
+```
+struct {
+    uint32 triangle_offset_in_indices;
+    uint32 num_triangles_in_indices;
+} shape_info[shape_count];
+```
+
+It appears the next sections follow the same structure as the version 1,2 files.
 
 ```
 if (vertex_count > 0xFFFF) {
